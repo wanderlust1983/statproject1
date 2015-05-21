@@ -1,0 +1,72 @@
+##This project investigates the exponential distribution in R and compare it with the CLT. We are asked
+## to investigate the distribution of averages of 40 exponentials and run 1000 simulation
+
+## set.seed(1) to make sure that the following simulation is reproduciable
+set.seed(1)
+
+## The ggplot2 package is called to make graphs
+library(ggplot2)
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##  exp_dist_sim is to draw random sample of size 40 and repeat it 1000 times
+##  n is 40000=40*1000 in the rexp(n,rate) funciton and rate is predefined to be 0.2
+exp_dist_sim<-rexp(40000,rate=0.2)
+
+## format the data come out of exp_dist_sim to be a 1000-row and 40-columne Matrics
+## each row represent a simulation
+mean_sim_data<-matrix(exp_dist_sim,nrow=1000,ncol=40)
+
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##1. Show the sample mean and compare it to the theoretical mean of the distribution
+
+## to get the sample mean of each row, apply () function is used
+mean_each_sample<-apply(mean_sim_data,1,mean)
+
+
+## get the mean of the 1000 sample means
+sample_mean<-mean(mean_each_sample)
+
+## get the theoretical mean, i.e. 1\0.2=5 in this case
+theo_mean<-1/0.2
+print(theo_mean)
+
+## compare sample mean vs the theoretical mean
+sample_mean-theo_mean
+
+
+## use ggplot to plot the sample means 
+g<-ggplot(data.frame(x=1:1000,y=mean_each_sample),aes(x=x,y=y))
+
+## add a horizontal line that represents the sample mean to the plot and mark it in coral
+g<-g+geom_line(size=1)+geom_hline(yintercept=sample_mean,colour="coral",size=2)
+g<-g+labs(x="number of simulations",y="sample mean")
+g
+
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+## 2. Show how variable the sample is (via variance) and 
+## compare it to the theoretical variance of the distribution.
+
+
+## to get the sample variance 
+var_sample<-var(mean_each_sample)
+
+print(var_sample)
+
+## get the theoretical var, i.e. 1\(0.2^2)=25 in this case
+theo_var<-1/(0.2^2)
+print(theo_var)
+
+
+## compare sample variance vs the theoretical variance
+var_sample-theo_var 
+## a negative value means the a good percentage of variance decreases 
+
+
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##3. Show that the distribution is approximately normal
+
+##Using histogram to show that the sample means have a normal distribution
+hist(mean_each_sample)
